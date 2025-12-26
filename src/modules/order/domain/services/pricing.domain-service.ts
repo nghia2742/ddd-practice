@@ -14,6 +14,7 @@ export interface IPricingDomainService {
   ): Money;
 }
 
+// The implementation is defined here because this is PURE implementation
 export class PricingDomainService implements IPricingDomainService {
   private readonly TAX_RATE = 0.1; // 10%
   private readonly DISCOUNT_MIN_SUBTOTAL = 500;

@@ -5,8 +5,8 @@ import { Quantity } from '#/order/domain/value-objects/quantity.vo';
 import { OrderItemError } from '#/order/domain/errors/order.error';
 
 export class OrderItem {
-  private readonly id: string;
-  private readonly createdAt: Date;
+  private orderItemId: OrderItemId;
+  private createdAt: Date;
   private updatedAt: Date;
   private productId: ProductId;
   private price: Money;
@@ -14,12 +14,12 @@ export class OrderItem {
   private isLocked: boolean = false;
 
   constructor(
-    id: OrderItemId,
+    orderItemId: OrderItemId,
     productId: ProductId,
     price: Money,
     quantity: Quantity,
   ) {
-    this.id = id.getValue();
+    this.orderItemId = orderItemId;
     this.createdAt = new Date();
     this.updatedAt = new Date();
     this.productId = productId;
@@ -27,8 +27,8 @@ export class OrderItem {
     this.quantity = quantity;
   }
 
-  getId(): string {
-    return this.id;
+  getOrderItemId(): OrderItemId {
+    return this.orderItemId;
   }
 
   getCreatedAt(): Date {
@@ -82,6 +82,6 @@ export class OrderItem {
   }
 
   equals(other: OrderItem): boolean {
-    return this.id === other.getId();
+    return this.orderItemId === other.getOrderItemId();
   }
 }

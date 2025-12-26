@@ -1,4 +1,4 @@
-export enum OrderStatus {
+export enum OrderStatusCode {
   PENDING = 'pending',
   PAID = 'paid',
   SHIPPED = 'shipped',
@@ -6,50 +6,56 @@ export enum OrderStatus {
   CANCELLED = 'cancelled',
 }
 
-export class OrderStatusVO {
-  private readonly value: OrderStatus;
+export class OrderStatus {
+  private readonly value: OrderStatusCode;
 
-  constructor(value: OrderStatus) {
+  constructor(value: OrderStatusCode) {
     this.value = value;
   }
 
-  static pending(): OrderStatusVO {
-    return new OrderStatusVO(OrderStatus.PENDING);
+  static pending(): OrderStatus {
+    return new OrderStatus(OrderStatusCode.PENDING);
   }
 
-  static paid(): OrderStatusVO {
-    return new OrderStatusVO(OrderStatus.PAID);
+  static paid(): OrderStatus {
+    return new OrderStatus(OrderStatusCode.PAID);
   }
 
-  static shipped(): OrderStatusVO {
-    return new OrderStatusVO(OrderStatus.SHIPPED);
+  static shipped(): OrderStatus {
+    return new OrderStatus(OrderStatusCode.SHIPPED);
   }
 
-  static delivered(): OrderStatusVO {
-    return new OrderStatusVO(OrderStatus.DELIVERED);
+  static delivered(): OrderStatus {
+    return new OrderStatus(OrderStatusCode.DELIVERED);
   }
 
-  static cancelled(): OrderStatusVO {
-    return new OrderStatusVO(OrderStatus.CANCELLED);
+  static cancelled(): OrderStatus {
+    return new OrderStatus(OrderStatusCode.CANCELLED);
   }
 
-  getValue(): OrderStatus {
+  getValue(): OrderStatusCode {
     return this.value;
   }
 
-  canTransitionTo(newStatus: OrderStatusVO): boolean {
-    const transitions: Record<OrderStatus, OrderStatus[]> = {
-      [OrderStatus.PENDING]: [OrderStatus.PAID, OrderStatus.CANCELLED],
-      [OrderStatus.PAID]: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
-      [OrderStatus.SHIPPED]: [OrderStatus.DELIVERED],
-      [OrderStatus.DELIVERED]: [],
-      [OrderStatus.CANCELLED]: [],
+  canTransitionTo(newStatus: OrderStatus): boolean {
+    const transitions: Record<OrderStatusCode, OrderStatusCode[]> = {
+      [OrderStatusCode.PENDING]: [
+        OrderStatusCode.PAID,
+        OrderStatusCode.CANCELLED,
+      ],
+      [OrderStatusCode.PAID]: [
+        OrderStatusCode.SHIPPED,
+        OrderStatusCode.CANCELLED,
+      ],
+      [OrderStatusCode.SHIPPED]: [OrderStatusCode.DELIVERED],
+      [OrderStatusCode.DELIVERED]: [],
+      [OrderStatusCode.CANCELLED]: [],
     };
 
     return transitions[this.value].includes(newStatus.value);
   }
 
-  equals(other: OrderStatusVO): boolean {
+  equals(other: OrderStatus): boolean {
     return this.value === other.value;
   }
 
@@ -58,22 +64,22 @@ export class OrderStatusVO {
   }
 
   isPending(): boolean {
-    return this.value === OrderStatus.PENDING;
+    return this.value === OrderStatusCode.PENDING;
   }
 
   isPaid(): boolean {
-    return this.value === OrderStatus.PAID;
+    return this.value === OrderStatusCode.PAID;
   }
 
   isShipped(): boolean {
-    return this.value === OrderStatus.SHIPPED;
+    return this.value === OrderStatusCode.SHIPPED;
   }
 
   isDelivered(): boolean {
-    return this.value === OrderStatus.DELIVERED;
+    return this.value === OrderStatusCode.DELIVERED;
   }
 
   isCancelled(): boolean {
-    return this.value === OrderStatus.CANCELLED;
+    return this.value === OrderStatusCode.CANCELLED;
   }
 }

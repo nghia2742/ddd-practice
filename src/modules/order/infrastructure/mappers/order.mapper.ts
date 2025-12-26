@@ -5,7 +5,7 @@ import { OrderId } from '#/order/domain/value-objects/order-id.vo';
 import { CustomerId } from '#/order/domain/value-objects/customer-id.vo';
 import { Money, Currency } from '#/order/domain/value-objects/money.vo';
 import { ShippingAddress } from '#/order/domain/value-objects/address.vo';
-import { OrderStatusVO } from '#/order/domain/value-objects/order-status.vo';
+import { OrderStatus } from '#/order/domain/value-objects/order-status.vo';
 import { OrderItem } from '#/order/domain/entities/order-item.entity';
 import { ProductId } from '#/order/domain/value-objects/product-id.vo';
 import { Quantity } from '#/order/domain/value-objects/quantity.vo';
@@ -47,7 +47,7 @@ export class OrderMapper {
 
     entity.items = domainOrder.getItems().map((item) => {
       const itemEntity = new OrderItemEntity();
-      itemEntity.id = item.getId();
+      itemEntity.id = item.getOrderItemId().getValue();
       itemEntity.orderId = entity.id;
       itemEntity.productId = item.getProductId().getValue();
       itemEntity.price = Number(item.getPrice().getAmount());
@@ -100,15 +100,15 @@ export class OrderMapper {
 
     // Only set status if it's different from the default 'pending'
     if (persistenceEntity.status !== 'pending') {
-      const statusMap: Record<string, OrderStatusVO> = {
-        pending: OrderStatusVO.pending(),
-        paid: OrderStatusVO.paid(),
-        shipped: OrderStatusVO.shipped(),
-        delivered: OrderStatusVO.delivered(),
-        cancelled: OrderStatusVO.cancelled(),
+      const statusMap: Record<string, OrderStatus> = {
+        pending: OrderStatus.pending(),
+        paid: OrderStatus.paid(),
+        shipped: OrderStatus.shipped(),
+        delivered: OrderStatus.delivered(),
+        cancelled: OrderStatus.cancelled(),
       };
       aggregateAny.status =
-        statusMap[persistenceEntity.status] || OrderStatusVO.pending();
+        statusMap[persistenceEntity.status] || OrderStatus.pending();
     }
 
     // Restore timestamps

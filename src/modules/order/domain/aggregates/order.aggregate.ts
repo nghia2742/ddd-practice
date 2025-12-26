@@ -4,7 +4,7 @@ import { CustomerId } from '#/order/domain/value-objects/customer-id.vo';
 import { Money } from '#/order/domain/value-objects/money.vo';
 import { Discount } from '#/order/domain/value-objects/discount.vo';
 import { ShippingAddress } from '#/order/domain/value-objects/address.vo';
-import { OrderStatusVO } from '#/order/domain/value-objects/order-status.vo';
+import { OrderStatus } from '#/order/domain/value-objects/order-status.vo';
 import { OrderItem } from '#/order/domain/entities/order-item.entity';
 import {
   OrderStatusError,
@@ -20,7 +20,7 @@ export class Order extends AggregateRoot {
   private orderId: OrderId;
   private customerId: CustomerId;
   private items: OrderItem[];
-  private status: OrderStatusVO;
+  private status: OrderStatus;
   private shippingAddress: ShippingAddress;
   private discount?: Discount;
   private shippingFee: Money;
@@ -44,7 +44,7 @@ export class Order extends AggregateRoot {
     this.orderId = orderId;
     this.customerId = customerId;
     this.items = items;
-    this.status = OrderStatusVO.pending();
+    this.status = OrderStatus.pending();
     this.shippingAddress = shippingAddress;
     this.discount = discount;
     this.shippingFee = shippingFee;
@@ -66,7 +66,7 @@ export class Order extends AggregateRoot {
     return this.items;
   }
 
-  getStatus(): OrderStatusVO {
+  getStatus(): OrderStatus {
     return this.status;
   }
 
@@ -109,7 +109,7 @@ export class Order extends AggregateRoot {
       );
     }
 
-    this.status = OrderStatusVO.paid();
+    this.status = OrderStatus.paid();
     this.paidAt = new Date();
     this.lockItems();
 
@@ -123,7 +123,7 @@ export class Order extends AggregateRoot {
       );
     }
 
-    this.status = OrderStatusVO.shipped();
+    this.status = OrderStatus.shipped();
     this.shippedAt = new Date();
 
     this.addDomainEvent(new OrderShippedEvent(this.orderId.getValue()));
@@ -137,7 +137,7 @@ export class Order extends AggregateRoot {
       );
     }
 
-    this.status = OrderStatusVO.delivered();
+    this.status = OrderStatus.delivered();
     this.deliveredAt = new Date();
 
     this.addDomainEvent(new OrderDeliveredEvent(this.orderId.getValue()));
@@ -150,7 +150,7 @@ export class Order extends AggregateRoot {
       );
     }
 
-    this.status = OrderStatusVO.cancelled();
+    this.status = OrderStatus.cancelled();
 
     this.addDomainEvent(new OrderCancelledEvent(this.orderId.getValue()));
   }

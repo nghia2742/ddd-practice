@@ -7,8 +7,8 @@ import { ShipOrderUseCase } from '#/order/application/use-cases/ship-order.use-c
 import { CancelOrderUseCase } from '#/order/application/use-cases/cancel-order.use-case';
 import { DeliverOrderUseCase } from '#/order/application/use-cases/deliver-order.use-case';
 import { PricingDomainService } from '#/order/domain/services/pricing.domain-service';
-import { StockService } from '#/order/domain/services/stock.domain-service';
-import { PaymentPolicy } from '#/order/domain/services/payment-policy.service';
+import { StockDomainService } from '#/order/domain/services/stock.domain-service';
+import { PaymentPolicy } from '#/order/domain/policies/payment.policy';
 import { OrderEntity } from '#/order/infrastructure/entities/order.entity';
 import { OrderItemEntity } from '#/order/infrastructure/entities/order-item.entity';
 import { StockEntity } from '#/order/infrastructure/entities/stock.entity';
@@ -27,7 +27,7 @@ import { TypeOrmStockRepository } from '#/order/infrastructure/repositories/stoc
     CancelOrderUseCase,
     DeliverOrderUseCase,
     PricingDomainService,
-    StockService,
+    StockDomainService,
     PaymentPolicy,
     {
       provide: 'IOrderRepository',
@@ -35,7 +35,7 @@ import { TypeOrmStockRepository } from '#/order/infrastructure/repositories/stoc
     },
     {
       provide: 'IStockService',
-      useClass: StockService,
+      useClass: StockDomainService,
     },
     {
       provide: 'IStockRepository',

@@ -46,8 +46,9 @@ ddd-practice/
 │   │       │   │   └── product-id.vo.ts
 │   │       │   ├── services/                  # Domain Services (business logic)
 │   │       │   │   ├── pricing.domain-service.ts
-│   │       │   │   ├── payment-policy.service.ts
 │   │       │   │   └── stock.domain-service.ts
+│   │       │   ├── policies/                  # Business Policies
+│   │       │   │   └── payment.policy.ts
 │   │       │   ├── events/                    # Domain Events
 │   │       │   │   ├── order-created.event.ts
 │   │       │   │   ├── order-paid.event.ts
@@ -98,7 +99,6 @@ ddd-practice/
 │   └── shared/                       # 🟣 SHARED KERNEL
 │       ├── kernel/                   # Base Classes & Interfaces
 │       │   ├── aggregate-root.ts     # Base class for Aggregate Roots
-│       │   ├── base.entity.ts        # Base class for Entities
 │       │   ├── domain-event.ts       # Interface for Domain Events
 │       │   ├── event-handler.interface.ts
 │       │   └── repository.interface.ts
@@ -119,7 +119,7 @@ ddd-practice/
 
 | Layer | Purpose | Dependencies | Example |
 |-------|---------|--------------|---------|
-| **Domain** | Pure business logic | No dependencies | Order, Money, OrderStatus |
+| **Domain** | Pure business logic | No dependencies | Order, Money, OrderStatusCode |
 | **Application** | Orchestration Use Cases | → Domain | CreateOrderUseCase |
 | **Infrastructure** | Adapters & Persistence | → Domain, Application | OrderRepositoryImpl, Database |
 | **Presentation** | Controllers & HTTP | → Application | OrderController |
@@ -263,7 +263,7 @@ Order (Aggregate Root)
 │   ├── productId: ProductId (VO)
 │   ├── price: Money (VO)
 │   └── quantity: Quantity (VO)
-├── status: OrderStatus (VO - Enum)
+├── status: OrderStatusCode (VO - Enum)
 ├── shippingAddress: Address (VO)
 ├── discount?: Discount (VO)
 ├── shippingFee: Money (VO)
@@ -306,7 +306,7 @@ Quantity {
   value: number        // ≥ 1
 }
 
-OrderStatus {
+OrderStatusCode {
   value: "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED"
 }
 
@@ -349,8 +349,14 @@ checkAvailability(items[]): boolean {
   // Check if inventory is available
   // Interface in domain, implementation in infrastructure
 }
+```
 
-// PaymentPolicyService
+### Business Policies
+
+Policies encapsulate specific business rules or workflows:
+
+```typescript
+// PaymentPolicy
 process(paymentMethod, amount): PaymentResult {
   // Process payment by method
 }
@@ -758,7 +764,7 @@ Shared Kernel (Base Classes, Events)
 - `id`: OrderId (VO)
 - `customerId`: CustomerId (VO)
 - `items`: OrderItem[]
-- `status`: OrderStatus (VO - enum)
+- `status`: OrderStatusCode (VO - enum)
 - `shippingAddress`: Address (VO)
 - `discount?`: Discount (VO - optional)
 - `shippingFee`: Money (VO)
@@ -878,7 +884,7 @@ Main use cases:
 **Process:**
 1. Load Order from Repository
 2. Check Order.status === PENDING
-3. Process payment via PaymentPolicyService
+3. Process payment via PaymentPolicy
 4. Update status → PAID, set paidAt
 5. Save Order
 6. Publish OrderPaidEvent
@@ -962,8 +968,9 @@ src/
           product-id.vo.ts
         services/
           pricing.domain-service.ts # Pricing calculation
-          payment-policy.service.ts # Payment processing
           stock.domain-service.ts   # Stock checking
+        policies/
+          payment.policy.ts         # Payment processing
         repositories/
           order.repository.ts       # Interface (Port)
           stock.repository.ts

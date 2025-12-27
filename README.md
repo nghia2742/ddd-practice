@@ -411,7 +411,7 @@ OrderCancelledEvent {
 ### 1. **Install Dependencies**
 
 ```bash
-npm install
+yarn install
 ```
 
 ### 2. **Configure Database**
@@ -427,7 +427,7 @@ docker-compose up -d
 
 ```bash
 # Watch mode (auto-reload on code changes)
-npm run start:dev
+yarn start:dev
 
 # Server will run at: http://localhost:3000
 ```
@@ -435,8 +435,8 @@ npm run start:dev
 ### 4. **Format & Lint**
 
 ```bash
-npm run format     # Prettier format code
-npm run lint       # ESLint check & fix
+yarn format     # Prettier format code
+yarn lint       # ESLint check & fix
 ```
 
 ---
@@ -522,18 +522,6 @@ npm run lint       # ESLint check & fix
 }
 ```
 
-**CURL Example:**
-
-```bash
-curl -X POST http://localhost:3000/orders \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerId": "550e8400-e29b-41d4-a716-446655440000",
-    "items": [{"productId": "660e8400-e29b-41d4-a716-446655440001", "price": {"amount": 100000, "currency": "VND"}, "quantity": 2}],
-    "shippingAddress": {"street": "123 Nguyen Hue", "city": "Ho Chi Minh", "country": "VN", "postalCode": "700000"}
-  }'
-```
-
 ---
 
 ### **2️⃣ Pay Order**
@@ -563,14 +551,6 @@ curl -X POST http://localhost:3000/orders \
 }
 ```
 
-**CURL Example:**
-
-```bash
-curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/pay \
-  -H "Content-Type: application/json" \
-  -d '{"paymentMethod": "CREDIT_CARD"}'
-```
-
 ---
 
 ### **3️⃣ Ship Order**
@@ -591,13 +571,6 @@ curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/p
   "status": "SHIPPED",
   "shippedAt": "2025-12-20T10:10:00Z"
 }
-```
-
-**CURL Example:**
-
-```bash
-curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/ship \
-  -H "Content-Type: application/json"
 ```
 
 ---
@@ -688,19 +661,19 @@ npm run test:watch
 
 # Coverage
 npm run test:cov
+yarn test
+
+# Watch mode
+yarn test:watch
+
+# Coverage
+yarn test:cov
 ```
 
 ### **E2E Tests**
 
 ```bash
-npm run test:e2e
-```
-
----
-
-## 🏗️ Clean Architecture + DDD
-
-### **Dependency Diagram**
+yarDependency Diagram**
 
 ```
 Presentation Layer (Controllers)
@@ -1077,25 +1050,3 @@ src/
 | **Domain Event**   | Event when state changes              | Domain → Infrastructure                 |
 | **Repository**     | Abstraction over persistence          | Interface: Domain, Impl: Infrastructure |
 | **DTO**            | Data Transfer, no logic               | Application/Presentation                |
-
----
-
-## 🚀 Next Steps
-
-1. **Implement Value Objects** with validation
-2. **Implement Order Aggregate** with domain rules
-3. **Implement Domain Services** (PricingService, StockService)
-4. **Implement Use Cases** with proper error handling
-5. **Implement Repositories** with TypeORM
-6. **Add Event Subscribers** for side effects
-7. **Write Unit Tests** for domain logic
-8. **Write E2E Tests** for workflows
-
----
-
-## 📖 References
-
-- [Domain-Driven Design by Eric Evans](https://domaindrivedesign.org/)
-- [Clean Architecture by Uncle Bob](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [NestJS Documentation](https://docs.nestjs.com/)
-- [CQRS Pattern](https://martinfowler.com/bliki/CQRS.html)

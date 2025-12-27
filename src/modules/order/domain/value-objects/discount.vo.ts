@@ -1,28 +1,40 @@
 import { Money } from '#/order/domain/value-objects/money.vo';
+import { InvalidDiscountException } from '../exceptions/order.exception';
 
 export enum DiscountType {
-  PERCENTAGE = 'percentage',
-  FIXED = 'fixed',
+  PERCENTAGE = 'PERCENTAGE',
+  FIXED = 'FIXED',
 }
 
 export class Discount {
-  private readonly type: DiscountType;
+  private readonly type: string;
   private readonly value: number;
 
-  constructor(type: DiscountType, value: number) {
-    if (type === DiscountType.PERCENTAGE) {
+  constructor(type: string, value: number) {
+    if (
+      [
+        DiscountType.FIXED.toString(),
+        DiscountType.PERCENTAGE.toString(),
+      ].indexOf(type) === -1
+    ) {
+      throw new InvalidDiscountException('Invalid discount type');
+    }
+
+    if (type === DiscountType.PERCENTAGE.toString()) {
       if (value < 0 || value > 50) {
-        throw new Error('Discount percentage must be between 0 and 50');
+        throw new InvalidDiscountException(
+          'Discount percentage must be between 0 and 50',
+        );
       }
     }
     if (value < 0) {
-      throw new Error('Discount value cannot be negative');
+      throw new InvalidDiscountException('Discount value cannot be negative');
     }
     this.type = type;
     this.value = value;
   }
 
-  getType(): DiscountType {
+  getType(): string {
     return this.type;
   }
 
@@ -31,13 +43,15 @@ export class Discount {
   }
 
   calculateDiscountAmount(subtotal: Money): Money {
-    if (this.type === DiscountType.PERCENTAGE) {
+    if (this.type === DiscountType.PERCENTAGE.toString()) {
       const discountAmount = subtotal.getAmount() * (this.value / 100);
       return new Money(discountAmount, subtotal.getCurrency());
     } else {
       const discountAmount = this.value;
       if (discountAmount > subtotal.getAmount()) {
-        throw new Error('Fixed discount cannot exceed subtotal');
+        throw new InvalidDiscountException(
+          'Fixed discount cannot exceed subtotal',
+        );
       }
       return new Money(discountAmount, subtotal.getCurrency());
     }
@@ -48,7 +62,7 @@ export class Discount {
   }
 
   toString(): string {
-    if (this.type === DiscountType.PERCENTAGE) {
+    if (this.type === DiscountType.PERCENTAGE.toString()) {
       return `${this.value}%`;
     }
     return `${this.value} fixed`;

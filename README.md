@@ -117,13 +117,13 @@ ddd-practice/
 
 ### 📊 Layer Explanation
 
-| Layer | Purpose | Dependencies | Example |
-|-------|---------|--------------|---------|
-| **Domain** | Pure business logic | No dependencies | Order, Money, OrderStatusCode |
-| **Application** | Orchestration Use Cases | → Domain | CreateOrderUseCase |
-| **Infrastructure** | Adapters & Persistence | → Domain, Application | OrderRepositoryImpl, Database |
-| **Presentation** | Controllers & HTTP | → Application | OrderController |
-| **Shared Kernel** | Reusable Base Classes | No dependencies | AggregateRoot, DomainEvent |
+| Layer              | Purpose                 | Dependencies          | Example                       |
+| ------------------ | ----------------------- | --------------------- | ----------------------------- |
+| **Domain**         | Pure business logic     | No dependencies       | Order, Money, OrderStatusCode |
+| **Application**    | Orchestration Use Cases | → Domain              | CreateOrderUseCase            |
+| **Infrastructure** | Adapters & Persistence  | → Domain, Application | OrderRepositoryImpl, Database |
+| **Presentation**   | Controllers & HTTP      | → Application         | OrderController               |
+| **Shared Kernel**  | Reusable Base Classes   | No dependencies       | AggregateRoot, DomainEvent    |
 
 ---
 
@@ -288,6 +288,7 @@ OrderItem
 ```
 
 **Rules:**
+
 - Quantity ≥ 1
 - Price is Money VO (amount ≥ 0)
 - Cannot modify item after Order is PAID
@@ -328,6 +329,7 @@ OrderId / CustomerId / ProductId {
 ```
 
 **Benefits:**
+
 - ✅ Immutable → thread-safe
 - ✅ Self-validating → no invalid state
 - ✅ Rich semantics → `Money` not just `number`
@@ -397,6 +399,7 @@ OrderCancelledEvent {
 ```
 
 **Usage:**
+
 - Published from Aggregate Root
 - Subscribed from Event Subscribers (Infrastructure Layer)
 - Trigger side effects (send emails, update analytics, etc.)
@@ -447,100 +450,87 @@ npm run lint       # ESLint check & fix
 **Endpoint:** `POST /orders`
 
 **Request Body:**
+
 ```json
 {
   "customerId": "550e8400-e29b-41d4-a716-446655440000",
   "items": [
     {
       "productId": "660e8400-e29b-41d4-a716-446655440001",
-      "price": {
-        "amount": 100000,
-        "currency": "VND"
-      },
-      "quantity": 2
+      "price": 100000,
+      "quantity": 1
     },
     {
       "productId": "660e8400-e29b-41d4-a716-446655440002",
-      "price": {
-        "amount": 50000,
-        "currency": "VND"
-      },
-      "quantity": 1
+      "price": 50000,
+      "quantity": 3
     }
   ],
   "shippingAddress": {
     "street": "123 Nguyen Hue",
     "city": "Ho Chi Minh",
-    "country": "Vietnam",
+    "country": "VN",
     "postalCode": "700000"
   },
   "discount": {
     "type": "PERCENTAGE",
     "value": 10
-  }
+  },
+  "currency": "VND",
+  "shippingFee": 25000
 }
 ```
 
 **Response (201 Created):**
+
 ```json
 {
-  "id": "770e8400-e29b-41d4-a716-446655440000",
+  "id": "251292e7-1c6e-4cdc-bb08-9857a65a050d",
   "customerId": "550e8400-e29b-41d4-a716-446655440000",
-  "status": "PENDING",
   "items": [
     {
+      "id": "17dfbcbe-119d-48da-900f-42336d6654c7",
       "productId": "660e8400-e29b-41d4-a716-446655440001",
-      "price": {
-        "amount": 100000,
-        "currency": "VND"
-      },
-      "quantity": 2,
-      "total": {
-        "amount": 200000,
-        "currency": "VND"
-      }
+      "price": 100000,
+      "quantity": 1,
+      "total": 100000
+    },
+    {
+      "id": "69d66dc3-6943-4195-af43-7d75c14d658d",
+      "productId": "660e8400-e29b-41d4-a716-446655440002",
+      "price": 50000,
+      "quantity": 3,
+      "total": 150000
     }
   ],
-  "subtotal": {
-    "amount": 250000,
-    "currency": "VND"
-  },
-  "shippingFee": {
-    "amount": 30000,
-    "currency": "VND"
-  },
-  "taxAmount": {
-    "amount": 28000,
-    "currency": "VND"
-  },
-  "discount": {
-    "type": "PERCENTAGE",
-    "value": 10,
-    "amount": 25000,
-    "currency": "VND"
-  },
-  "totalAmount": {
-    "amount": 283000,
-    "currency": "VND"
-  },
+  "currency": "VND",
+  "status": "PENDING",
   "shippingAddress": {
     "street": "123 Nguyen Hue",
     "city": "Ho Chi Minh",
-    "country": "Vietnam",
+    "country": "VN",
     "postalCode": "700000"
   },
-  "createdAt": "2025-12-20T10:00:00Z"
+  "shippingFee": 25000,
+  "taxAmount": 25000,
+  "totalAmount": 275000,
+  "discount": {
+    "type": "PERCENTAGE",
+    "value": 10
+  },
+  "createdAt": "2025-12-27T05:14:31.005Z"
 }
 ```
 
 **CURL Example:**
+
 ```bash
 curl -X POST http://localhost:3000/orders \
   -H "Content-Type: application/json" \
   -d '{
     "customerId": "550e8400-e29b-41d4-a716-446655440000",
     "items": [{"productId": "660e8400-e29b-41d4-a716-446655440001", "price": {"amount": 100000, "currency": "VND"}, "quantity": 2}],
-    "shippingAddress": {"street": "123 Nguyen Hue", "city": "Ho Chi Minh", "country": "Vietnam", "postalCode": "700000"}
+    "shippingAddress": {"street": "123 Nguyen Hue", "city": "Ho Chi Minh", "country": "VN", "postalCode": "700000"}
   }'
 ```
 
@@ -551,6 +541,7 @@ curl -X POST http://localhost:3000/orders \
 **Endpoint:** `POST /orders/:orderId/pay`
 
 **Request Body:**
+
 ```json
 {
   "paymentMethod": "CREDIT_CARD"
@@ -558,6 +549,7 @@ curl -X POST http://localhost:3000/orders \
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "770e8400-e29b-41d4-a716-446655440000",
@@ -572,6 +564,7 @@ curl -X POST http://localhost:3000/orders \
 ```
 
 **CURL Example:**
+
 ```bash
 curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/pay \
   -H "Content-Type: application/json" \
@@ -585,11 +578,13 @@ curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/p
 **Endpoint:** `POST /orders/:orderId/ship`
 
 **Request Body:** (Empty)
+
 ```json
 {}
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "770e8400-e29b-41d4-a716-446655440000",
@@ -599,6 +594,7 @@ curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/p
 ```
 
 **CURL Example:**
+
 ```bash
 curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/ship \
   -H "Content-Type: application/json"
@@ -611,11 +607,13 @@ curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/s
 **Endpoint:** `POST /orders/:orderId/deliver`
 
 **Request Body:** (Empty)
+
 ```json
 {}
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "770e8400-e29b-41d4-a716-446655440000",
@@ -631,11 +629,13 @@ curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/s
 **Endpoint:** `POST /orders/:orderId/cancel`
 
 **Request Body:** (Empty)
+
 ```json
 {}
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "770e8400-e29b-41d4-a716-446655440000",
@@ -645,6 +645,7 @@ curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/s
 ```
 
 **Conditions:**
+
 - Can only cancel when status is `PENDING` or `PAID` (not shipped)
 - If status is `SHIPPED` or `DELIVERED`, system will return error
 
@@ -655,6 +656,7 @@ curl -X POST http://localhost:3000/orders/770e8400-e29b-41d4-a716-446655440000/s
 **Endpoint:** `GET /orders/:orderId`
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "770e8400-e29b-41d4-a716-446655440000",
@@ -725,31 +727,37 @@ Shared Kernel (Base Classes, Events)
 ## 📚 Key Concepts
 
 ### **Aggregate Root (Order)**
+
 - Entity responsible for managing aggregate state
 - Protects business rules
 - Publishes domain events
 
 ### **Value Objects**
+
 - Immutable
 - Has business meaning (Money not just number)
 - Self-validating
 
 ### **Domain Services**
+
 - Logic too complex for entity
 - No state
 - Depends on repositories (interfaces)
 
 ### **Use Cases**
+
 - Orchestrate domain model
 - One use case per file
 - May throw domain exceptions
 
 ### **Repository Pattern**
+
 - Interface in domain
 - Implementation in infrastructure
 - Abstracts away persistence details
 
 ### **Domain Events**
+
 - Published when aggregate state changes
 - Subscribed from infrastructure (event subscribers)
 - Trigger side effects
@@ -761,6 +769,7 @@ Shared Kernel (Base Classes, Events)
 ### 🧱 Order Entity - Fields & Constraints
 
 **Main fields:**
+
 - `id`: OrderId (VO)
 - `customerId`: CustomerId (VO)
 - `items`: OrderItem[]
@@ -784,6 +793,7 @@ Orders can only transition between states following these rules:
 - `PAID` → `CANCELLED` (only if not shipped)
 
 **🚫 Invalid transitions:**
+
 - Cannot ship if not paid
 - Cannot cancel after shipped
 - Cannot mark delivered if not shipped
@@ -798,6 +808,7 @@ total = subtotal + shippingFee + taxAmount - discountAmount
 ```
 
 **Details:**
+
 - `shippingFee`: Depends on distance
 - `taxAmount`: 10% (default)
 - `discount`: Only applies if subtotal > 500,000 VND
@@ -808,6 +819,7 @@ total = subtotal + shippingFee + taxAmount - discountAmount
 #### 🔐 Rule 3: OrderItem
 
 OrderItem always follows:
+
 - `quantity` ≥ 1
 - `price` is Money VO
 - Cannot modify item after Order is PAID
@@ -815,22 +827,26 @@ OrderItem always follows:
 #### 🚚 Rule 4: ShippingAddress
 
 **Value Object:**
+
 - `street`: Street name
 - `city`: City name
 - `country`: Country
 - `postalCode`: Postal code
 
 **Constraints:**
+
 - Postal code must be valid format
 - Country must be in supported list
 
 #### 🏷 Rule 5: Discount
 
 **Discount VO:**
+
 - `type`: "PERCENTAGE" | "FIXED"
 - `value`: number
 
 **Constraints:**
+
 - Percentage ≤ 50%
 - Fixed ≤ subtotal
 - Cannot apply discount after payment
@@ -844,11 +860,13 @@ Order can only be created if all items are in stock.
 #### 💰 Rule 7: Payment
 
 Orders can be paid via:
+
 - Credit card
 - Bank transfer
 - COD (Cash on Delivery)
 
 **Rules:**
+
 - Order must be in PENDING state
 - Successful payment → triggers OrderPaidEvent
 
@@ -861,12 +879,14 @@ Main use cases:
 ### **1️⃣ CreateOrderUseCase**
 
 **Input:**
+
 - `customerId`
 - `items[]`
 - `shippingAddress`
 - `discount?`
 
 **Process:**
+
 1. Validate input from DTO
 2. Check inventory via StockDomainService
 3. Validate shipping address
@@ -878,10 +898,12 @@ Main use cases:
 ### **2️⃣ PayOrderUseCase**
 
 **Input:**
+
 - `orderId`
 - `paymentMethod`
 
 **Process:**
+
 1. Load Order from Repository
 2. Check Order.status === PENDING
 3. Process payment via PaymentPolicy
@@ -892,6 +914,7 @@ Main use cases:
 ### **3️⃣ ShipOrderUseCase**
 
 **Process:**
+
 1. Load Order from Repository
 2. Check Order.status === PAID
 3. Update status → SHIPPED, set shippedAt
@@ -901,6 +924,7 @@ Main use cases:
 ### **4️⃣ DeliverOrderUseCase**
 
 **Process:**
+
 1. Load Order from Repository
 2. Check Order.status === SHIPPED
 3. Update status → DELIVERED, set deliveredAt
@@ -910,6 +934,7 @@ Main use cases:
 ### **5️⃣ CancelOrderUseCase**
 
 **Process:**
+
 1. Load Order from Repository
 2. Check Order.status ∈ [PENDING, PAID]
 3. If PAID: Check not shipped yet
@@ -982,7 +1007,7 @@ src/
           order-cancelled.event.ts
         errors/
           order.error.ts
-      
+
       # 🟡 APPLICATION LAYER (Use Cases & Orchestration)
       application/
         use-cases/
@@ -998,7 +1023,7 @@ src/
           order.mapper.ts           # DTO ↔ Domain mapping
         services/
           # Application-level services (orchestration only)
-      
+
       # 🔵 INFRASTRUCTURE LAYER (Adapters & Persistence)
       infrastructure/
         entities/
@@ -1012,7 +1037,7 @@ src/
           order.mapper.ts           # Domain ↔ DB mapping
         subscribers/
           order-created.subscriber.ts
-      
+
       # 🟢 PRESENTATION LAYER (Controllers & HTTP)
       presentation/
         controllers/
@@ -1023,10 +1048,10 @@ src/
           index.ts                  # Filters export
         guards/                     # Authorization
         interceptors/               # Response formatting
-      
+
       # 📋 Module Definition
       order.module.ts              # NestJS Module
-  
+
   # 🟣 SHARED KERNEL (Reusable Base Classes)
   shared/
     kernel/
@@ -1042,16 +1067,16 @@ src/
 
 ## 📚 DDD Concepts Summary
 
-| Concept | Meaning | Used In |
-|---------|---------|---------|
-| **Aggregate Root** | Entity responsible for managing state | Domain - Order |
-| **Entity** | Object with identity, mutable | Domain - OrderItem |
-| **Value Object** | Immutable, identity by value | Domain - Money, Quantity |
-| **Domain Service** | Logic too complex for entity | Domain - PricingService |
-| **Use Case** | Business process, orchestration | Application - CreateOrderUseCase |
-| **Domain Event** | Event when state changes | Domain → Infrastructure |
-| **Repository** | Abstraction over persistence | Interface: Domain, Impl: Infrastructure |
-| **DTO** | Data Transfer, no logic | Application/Presentation |
+| Concept            | Meaning                               | Used In                                 |
+| ------------------ | ------------------------------------- | --------------------------------------- |
+| **Aggregate Root** | Entity responsible for managing state | Domain - Order                          |
+| **Entity**         | Object with identity, mutable         | Domain - OrderItem                      |
+| **Value Object**   | Immutable, identity by value          | Domain - Money, Quantity                |
+| **Domain Service** | Logic too complex for entity          | Domain - PricingService                 |
+| **Use Case**       | Business process, orchestration       | Application - CreateOrderUseCase        |
+| **Domain Event**   | Event when state changes              | Domain → Infrastructure                 |
+| **Repository**     | Abstraction over persistence          | Interface: Domain, Impl: Infrastructure |
+| **DTO**            | Data Transfer, no logic               | Application/Presentation                |
 
 ---
 

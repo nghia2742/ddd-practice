@@ -19,6 +19,9 @@ export class OrderEntity {
   @Column('varchar', { length: 50 })
   status!: string;
 
+  @Column('varchar', { length: 10, default: 'USD' })
+  currency!: string;
+
   @Column('decimal', { precision: 10, scale: 2 })
   totalAmount!: number;
 

@@ -1,12 +1,14 @@
+import { InvalidQuantityException } from '../exceptions/order.exception';
+
 export class Quantity {
   private readonly value: number;
 
   constructor(value: number) {
     if (value < 1) {
-      throw new Error('Quantity must be at least 1');
+      throw new InvalidQuantityException('Quantity must be at least 1');
     }
     if (!Number.isInteger(value)) {
-      throw new Error('Quantity must be an integer');
+      throw new InvalidQuantityException('Quantity must be an integer');
     }
     this.value = value;
   }
@@ -22,14 +24,16 @@ export class Quantity {
   subtract(other: Quantity): Quantity {
     const result = this.value - other.value;
     if (result < 1) {
-      throw new Error('Resulting quantity must be at least 1');
+      throw new InvalidQuantityException(
+        'Resulting quantity must be at least 1',
+      );
     }
     return new Quantity(result);
   }
 
   multiply(multiplier: number): Quantity {
     if (multiplier < 1) {
-      throw new Error('Multiplier must be at least 1');
+      throw new InvalidQuantityException('Multiplier must be at least 1');
     }
     return new Quantity(Math.floor(this.value * multiplier));
   }

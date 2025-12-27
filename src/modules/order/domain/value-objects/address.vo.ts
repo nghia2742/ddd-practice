@@ -1,4 +1,16 @@
-const SUPPORTED_COUNTRIES = ['US', 'UK', 'DE', 'FR', 'ES', 'IT', 'CA', 'AU'];
+import { InvalidAddressException } from '../exceptions/order.exception';
+
+const SUPPORTED_COUNTRIES = [
+  'US',
+  'UK',
+  'DE',
+  'FR',
+  'ES',
+  'IT',
+  'CA',
+  'AU',
+  'VN',
+];
 
 const POSTAL_CODE_PATTERNS: Record<string, RegExp> = {
   US: /^\d{5}(-\d{4})?$/,
@@ -9,6 +21,7 @@ const POSTAL_CODE_PATTERNS: Record<string, RegExp> = {
   IT: /^\d{5}$/,
   CA: /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/i,
   AU: /^\d{4}$/,
+  VN: /^\d{6}$/,
 };
 
 export class ShippingAddress {
@@ -34,7 +47,7 @@ export class ShippingAddress {
 
   private validateCountry(country: string): void {
     if (!SUPPORTED_COUNTRIES.includes(country.toUpperCase())) {
-      throw new Error(
+      throw new InvalidAddressException(
         `Country ${country} is not supported. Supported countries: ${SUPPORTED_COUNTRIES.join(', ')}`,
       );
     }
@@ -43,7 +56,9 @@ export class ShippingAddress {
   private validatePostalCode(country: string, postalCode: string): void {
     const pattern = POSTAL_CODE_PATTERNS[country.toUpperCase()];
     if (!pattern || !pattern.test(postalCode)) {
-      throw new Error(`Invalid postal code for ${country}: ${postalCode}`);
+      throw new InvalidAddressException(
+        `Invalid postal code for ${country}: ${postalCode}`,
+      );
     }
   }
 

@@ -11,6 +11,7 @@ export class CreateOrderDto {
     country: string;
     postalCode: string;
   };
+  currency!: string;
   shippingFee!: number;
   discount?: {
     type: 'percentage' | 'fixed';

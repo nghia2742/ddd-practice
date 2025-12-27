@@ -6,6 +6,7 @@ export class OrderMapper {
     return {
       id: order.getOrderId().getValue(),
       customerId: order.getCustomerId().getValue(),
+      currency: order.getCurrency(),
       status: order.getStatus().getValue(),
       shippingAddress: {
         street: order.getShippingAddress().getStreet(),
@@ -40,6 +41,7 @@ export class OrderMapper {
         quantity: item.getQuantity().getValue(),
         total: item.getTotal().getAmount(),
       })),
+      currency: order.getCurrency(),
       status: order.getStatus().getValue(),
       shippingAddress: {
         street: order.getShippingAddress().getStreet(),

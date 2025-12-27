@@ -1,17 +1,25 @@
+import { InvalidMoneyException } from '../exceptions/order.exception';
+
 export enum Currency {
   USD = 'USD',
   EUR = 'EUR',
   GBP = 'GBP',
+  VND = 'VND',
 }
 
 export class Money {
   private readonly amount: number;
-  private readonly currency: Currency;
+  private readonly currency: string;
 
-  constructor(amount: number, currency: Currency = Currency.USD) {
+  constructor(amount: number, currency: string = Currency.USD) {
     if (amount < 0) {
-      throw new Error('Money amount cannot be negative');
+      throw new InvalidMoneyException('Money amount cannot be negative');
     }
+
+    if (!Object.values(Currency).includes(currency as Currency)) {
+      throw new InvalidMoneyException(`Unsupported currency: ${currency}`);
+    }
+
     this.amount = amount;
     this.currency = currency;
   }
@@ -20,31 +28,37 @@ export class Money {
     return this.amount;
   }
 
-  getCurrency(): Currency {
+  getCurrency(): string {
     return this.currency;
   }
 
   add(other: Money): Money {
     if (this.currency !== other.currency) {
-      throw new Error('Cannot add money with different currencies');
+      throw new InvalidMoneyException(
+        'Cannot add money with different currencies',
+      );
     }
     return new Money(this.amount + other.amount, this.currency);
   }
 
   subtract(other: Money): Money {
     if (this.currency !== other.currency) {
-      throw new Error('Cannot subtract money with different currencies');
+      throw new InvalidMoneyException(
+        'Cannot subtract money with different currencies',
+      );
     }
     const result = this.amount - other.amount;
     if (result < 0) {
-      throw new Error('Cannot subtract resulting in negative money');
+      throw new InvalidMoneyException(
+        'Cannot subtract resulting in negative money',
+      );
     }
     return new Money(result, this.currency);
   }
 
   multiply(multiplier: number): Money {
     if (multiplier < 0) {
-      throw new Error('Multiplier cannot be negative');
+      throw new InvalidMoneyException('Multiplier cannot be negative');
     }
     return new Money(this.amount * multiplier, this.currency);
   }

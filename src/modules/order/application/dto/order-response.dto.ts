@@ -1,6 +1,7 @@
 export class OrderResponseDto {
   id!: string;
   customerId!: string;
+  currency!: string;
   items!: Array<{
     id: string;
     productId: string;

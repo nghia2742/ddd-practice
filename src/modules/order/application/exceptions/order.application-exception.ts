@@ -13,7 +13,7 @@ export class OrderApplicationException extends ApplicationException {
  * Exception thrown when order is not found
  */
 export class OrderNotFoundException extends NotFoundException {
-  public readonly code: string;
+  declare public readonly code: string;
 
   constructor(orderId: string) {
     super('Order', orderId);

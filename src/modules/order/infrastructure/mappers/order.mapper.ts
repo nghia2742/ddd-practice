@@ -21,6 +21,7 @@ export class OrderMapper {
     entity.id = domainOrder.getOrderId().getValue();
     entity.customerId = domainOrder.getCustomerId().getValue();
     entity.status = domainOrder.getStatus().getValue() as string;
+    entity.currency = domainOrder.getTotalAmount().getCurrency();
     entity.totalAmount = Number(domainOrder.getTotalAmount().getAmount());
     entity.shippingFee = Number(domainOrder.getShippingFee().getAmount());
     entity.taxAmount = Number(domainOrder.getTaxAmount().getAmount());
@@ -34,7 +35,7 @@ export class OrderMapper {
     if (domainOrder.getDiscount()) {
       const discount = domainOrder.getDiscount();
       entity.discountPercentage =
-        discount!.getType() === DiscountType.PERCENTAGE
+        discount!.getType() === DiscountType.PERCENTAGE.toString()
           ? Number(discount!.getValue())
           : null;
     } else {
@@ -60,11 +61,13 @@ export class OrderMapper {
   }
 
   static toDomain(persistenceEntity: OrderEntity): Order {
+    const currency = (persistenceEntity.currency as Currency) || Currency.USD;
+
     const items = (persistenceEntity.items || []).map((itemEntity) => {
       return new OrderItem(
         new OrderItemId(itemEntity.id),
         new ProductId(itemEntity.productId),
-        new Money(Number(itemEntity.price), Currency.USD),
+        new Money(Number(itemEntity.price), persistenceEntity.currency),
         new Quantity(itemEntity.quantity),
       );
     });
@@ -88,10 +91,11 @@ export class OrderMapper {
       new OrderId(persistenceEntity.id),
       new CustomerId(persistenceEntity.customerId),
       items,
+      currency,
       shippingAddress,
-      new Money(Number(persistenceEntity.shippingFee), Currency.USD),
-      new Money(Number(persistenceEntity.taxAmount), Currency.USD),
-      new Money(Number(persistenceEntity.totalAmount), Currency.USD),
+      new Money(Number(persistenceEntity.shippingFee), currency),
+      new Money(Number(persistenceEntity.taxAmount), currency),
+      new Money(Number(persistenceEntity.totalAmount), currency),
       discount,
     );
 

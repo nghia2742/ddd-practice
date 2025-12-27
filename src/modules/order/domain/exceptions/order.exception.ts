@@ -62,3 +62,21 @@ export class InsufficientStockException extends OrderDomainException {
     );
   }
 }
+
+/**
+ * Exception thrown when address is invalid
+ */
+export class InvalidAddressException extends OrderDomainException {
+  constructor(message: string = 'Invalid address') {
+    super(message, 'INVALID_ADDRESS');
+  }
+}
+
+/**
+ * Exception thrown when quantity is invalid
+ */
+export class InvalidQuantityException extends OrderDomainException {
+  constructor(message: string = 'Invalid quantity') {
+    super(message, 'INVALID_QUANTITY');
+  }
+}

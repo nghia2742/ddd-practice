@@ -23,7 +23,6 @@
     },
     "incremental": true,
     "skipLibCheck": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
   }
 }

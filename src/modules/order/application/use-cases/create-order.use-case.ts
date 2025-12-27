@@ -44,6 +44,7 @@ export class CreateOrderUseCase {
       dto.shippingAddress.country,
       dto.shippingAddress.postalCode,
     );
+    const currency = dto.currency;
 
     // Create order items
     const items: OrderItem[] = [];
@@ -55,7 +56,7 @@ export class CreateOrderUseCase {
       // Check stock
       await this.stockService.checkStock(productId, quantity);
 
-      const price = new Money(itemDto.price, Currency.USD);
+      const price = new Money(itemDto.price, currency);
       const item = new OrderItem(id, productId, price, quantity);
       items.push(item);
     }
@@ -65,11 +66,7 @@ export class CreateOrderUseCase {
 
     let discount: Discount | undefined;
     if (dto.discount) {
-      const discountType =
-        dto.discount.type === 'percentage'
-          ? DiscountType.PERCENTAGE
-          : DiscountType.FIXED;
-      discount = new Discount(discountType, dto.discount.value);
+      discount = new Discount(dto.discount.type, dto.discount.value);
     }
 
     const taxAmount = this.pricingService.calculateTax(subtotal);
@@ -77,7 +74,8 @@ export class CreateOrderUseCase {
       discount,
       subtotal,
     );
-    const shippingFee = new Money(dto.shippingFee, Currency.USD);
+
+    const shippingFee = new Money(dto.shippingFee, currency);
     const totalAmount = this.pricingService.calculateTotal(
       subtotal,
       shippingFee,
@@ -90,6 +88,7 @@ export class CreateOrderUseCase {
       orderId,
       customerId,
       items,
+      currency,
       shippingAddress,
       shippingFee,
       taxAmount,

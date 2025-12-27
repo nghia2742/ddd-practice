@@ -20,6 +20,7 @@ export class Order extends AggregateRoot {
   private orderId: OrderId;
   private customerId: CustomerId;
   private items: OrderItem[];
+  private currency: string;
   private status: OrderStatus;
   private shippingAddress: ShippingAddress;
   private discount?: Discount;
@@ -34,6 +35,7 @@ export class Order extends AggregateRoot {
     orderId: OrderId,
     customerId: CustomerId,
     items: OrderItem[],
+    currency: string,
     shippingAddress: ShippingAddress,
     shippingFee: Money,
     taxAmount: Money,
@@ -44,6 +46,7 @@ export class Order extends AggregateRoot {
     this.orderId = orderId;
     this.customerId = customerId;
     this.items = items;
+    this.currency = currency;
     this.status = OrderStatus.pending();
     this.shippingAddress = shippingAddress;
     this.discount = discount;
@@ -64,6 +67,10 @@ export class Order extends AggregateRoot {
 
   getItems(): OrderItem[] {
     return this.items;
+  }
+
+  getCurrency(): string {
+    return this.currency;
   }
 
   getStatus(): OrderStatus {

@@ -11,56 +11,56 @@ import { OrderItemEntity } from '#/order/infrastructure/entities/order-item.enti
 @Entity('orders')
 export class OrderEntity {
   @PrimaryColumn('varchar', { length: 36 })
-  id: string;
+  id!: string;
 
   @Column('varchar', { length: 36 })
-  customerId: string;
+  customerId!: string;
 
   @Column('varchar', { length: 50 })
-  status: string;
+  status!: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  totalAmount: number;
+  totalAmount!: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  shippingFee: number;
+  shippingFee!: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  taxAmount: number;
+  taxAmount!: number;
 
   @Column('decimal', { precision: 5, scale: 2, nullable: true })
-  discountPercentage: number | null;
+  discountPercentage!: number | null;
 
   @Column('text')
-  shippingAddressStreet: string;
+  shippingAddressStreet!: string;
 
   @Column('text')
-  shippingAddressCity: string;
+  shippingAddressCity!: string;
 
   @Column('text')
-  shippingAddressCountry: string;
+  shippingAddressCountry!: string;
 
   @Column('text')
-  shippingAddressZipCode: string;
+  shippingAddressZipCode!: string;
 
   @Column('timestamp', { nullable: true })
-  paidAt: Date | null;
+  paidAt!: Date | null;
 
   @Column('timestamp', { nullable: true })
-  shippedAt: Date | null;
+  shippedAt!: Date | null;
 
   @Column('timestamp', { nullable: true })
-  deliveredAt: Date | null;
+  deliveredAt!: Date | null;
 
   @OneToMany(() => OrderItemEntity, (item: OrderItemEntity) => item.order, {
     cascade: true,
     eager: true,
   })
-  items: OrderItemEntity[];
+  items!: OrderItemEntity[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

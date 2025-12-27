@@ -1018,6 +1018,9 @@ src/
         controllers/
           order.controller.ts       # HTTP Endpoints
         filters/                    # Exception Filters
+          all-exceptions.filter.ts  # Catch all unhandled exceptions
+          base-exception.filter.ts  # Base filter class
+          index.ts                  # Filters export
         guards/                     # Authorization
         interceptors/               # Response formatting
       

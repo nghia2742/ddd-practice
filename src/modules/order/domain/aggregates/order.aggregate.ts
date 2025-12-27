@@ -7,9 +7,9 @@ import { ShippingAddress } from '#/order/domain/value-objects/address.vo';
 import { OrderStatus } from '#/order/domain/value-objects/order-status.vo';
 import { OrderItem } from '#/order/domain/entities/order-item.entity';
 import {
-  OrderStatusError,
-  OrderError,
-} from '#/order/domain/errors/order.error';
+  InvalidOrderStatusException,
+  OrderDomainException,
+} from '#/order/domain/exceptions/order.exception';
 import { OrderCreatedEvent } from '#/order/domain/events/order-created.event';
 import { OrderPaidEvent } from '#/order/domain/events/order-paid.event';
 import { OrderShippedEvent } from '#/order/domain/events/order-shipped.event';
@@ -104,8 +104,9 @@ export class Order extends AggregateRoot {
 
   markAsPaid(): void {
     if (!this.status.isPending()) {
-      throw new OrderStatusError(
-        `Cannot pay order with status ${this.status.toString()}`,
+      throw new InvalidOrderStatusException(
+        this.status.toString(),
+        OrderStatus.paid().toString(),
       );
     }
 
@@ -118,8 +119,9 @@ export class Order extends AggregateRoot {
 
   markAsShipped(): void {
     if (!this.status.isPaid()) {
-      throw new OrderStatusError(
-        'Can only ship paid orders. Current status: ' + this.status.toString(),
+      throw new InvalidOrderStatusException(
+        this.status.toString(),
+        OrderStatus.shipped().toString(),
       );
     }
 
@@ -131,9 +133,9 @@ export class Order extends AggregateRoot {
 
   markAsDelivered(): void {
     if (!this.status.isShipped()) {
-      throw new OrderStatusError(
-        'Can only deliver shipped orders. Current status: ' +
-          this.status.toString(),
+      throw new InvalidOrderStatusException(
+        this.status.toString(),
+        OrderStatus.delivered().toString(),
       );
     }
 
@@ -145,8 +147,9 @@ export class Order extends AggregateRoot {
 
   cancel(): void {
     if (this.status.isShipped() || this.status.isDelivered()) {
-      throw new OrderStatusError(
-        `Cannot cancel order with status ${this.status.toString()}`,
+      throw new InvalidOrderStatusException(
+        this.status.toString(),
+        OrderStatus.cancelled().toString(),
       );
     }
 
@@ -161,7 +164,10 @@ export class Order extends AggregateRoot {
 
   addItem(item: OrderItem): void {
     if (!this.status.isPending()) {
-      throw new OrderError('Can only add items to pending orders');
+      throw new OrderDomainException(
+        'Can only add items to pending orders',
+        'CANNOT_ADD_ITEM_NON_PENDING_ORDER',
+      );
     }
     this.items.push(item);
   }

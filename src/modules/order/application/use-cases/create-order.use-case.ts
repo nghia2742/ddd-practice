@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import type { IOrderRepository } from '#/order/domain/repositories/order.repository';
-import type { IStockService } from '#/order/domain/services/stock.domain-service';
+import type { IStockDomainService } from '#/order/domain/services/stock.domain-service';
 import { CreateOrderDto } from '#/order/application/dto/create-order.dto';
 import { Order } from '#/order/domain/aggregates/order.aggregate';
 import { OrderId } from '#/order/domain/value-objects/order-id.vo';
@@ -28,8 +28,8 @@ export class CreateOrderUseCase {
   constructor(
     @Inject('IOrderRepository')
     private readonly orderRepository: IOrderRepository,
-    @Inject('IStockService')
-    private readonly stockService: IStockService,
+    @Inject('IStockDomainService')
+    private readonly stockService: IStockDomainService,
   ) {
     this.pricingService = new PricingDomainService();
   }

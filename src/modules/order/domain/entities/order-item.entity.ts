@@ -2,7 +2,7 @@ import { Money } from '#/order/domain/value-objects/money.vo';
 import { OrderItemId } from '#/order/domain/value-objects/order-item-id.vo';
 import { ProductId } from '#/order/domain/value-objects/product-id.vo';
 import { Quantity } from '#/order/domain/value-objects/quantity.vo';
-import { OrderItemError } from '#/order/domain/errors/order.error';
+import { OrderDomainException } from '#/order/domain/exceptions/order.exception';
 
 export class OrderItem {
   private orderItemId: OrderItemId;
@@ -73,8 +73,9 @@ export class OrderItem {
 
   modifyQuantity(newQuantity: Quantity): void {
     if (!this.canModify()) {
-      throw new OrderItemError(
+      throw new OrderDomainException(
         'Cannot modify item quantity after order is locked',
+        'CANNOT_MODIFY_LOCKED_ITEM',
       );
     }
     this.quantity = newQuantity;

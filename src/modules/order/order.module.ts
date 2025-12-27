@@ -34,7 +34,7 @@ import { TypeOrmStockRepository } from '#/order/infrastructure/repositories/stoc
       useClass: TypeOrmOrderRepository,
     },
     {
-      provide: 'IStockService',
+      provide: 'IStockDomainService',
       useClass: StockDomainService,
     },
     {

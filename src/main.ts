@@ -11,11 +11,6 @@ async function bootstrap() {
 ╚══════════════════════════════════════════════════════════╝
 🗄️  Database Configuration:
    NODE_ENV=${process.env.NODE_ENV || 'development'}
-   ${
-     process.env.NODE_ENV === 'production'
-       ? `Production: PostgreSQL (${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432})`
-       : `Development: SQLite (${process.env.DB_PATH || 'ddd-practice.db'})`
-   }
 
 📝 Available Endpoints:
    POST   /orders              - Create order

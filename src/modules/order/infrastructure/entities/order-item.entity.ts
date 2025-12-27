@@ -12,32 +12,32 @@ import { OrderEntity } from './order.entity';
 @Entity('order_items')
 export class OrderItemEntity {
   @PrimaryColumn('varchar', { length: 36 })
-  id: string;
+  id!: string;
 
   @Column('varchar', { length: 36 })
-  orderId: string;
+  orderId!: string;
 
   @Column('varchar', { length: 36 })
-  productId: string;
+  productId!: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  price: number;
+  price!: number;
 
   @Column('int')
-  quantity: number;
+  quantity!: number;
 
   @Column('boolean', { default: false })
-  isLocked: boolean;
+  isLocked!: boolean;
 
   @ManyToOne(() => OrderEntity, (order) => order.items, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'orderId' })
-  order: OrderEntity;
+  order!: OrderEntity;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

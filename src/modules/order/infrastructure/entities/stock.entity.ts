@@ -9,17 +9,17 @@ import {
 @Entity('stock')
 export class StockEntity {
   @PrimaryColumn('varchar', { length: 36 })
-  id: string;
+  id!: string;
 
   @Column('varchar', { length: 36, unique: true })
-  productId: string;
+  productId!: string;
 
   @Column('int')
-  quantity: number;
+  quantity!: number;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

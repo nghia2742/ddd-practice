@@ -34,7 +34,7 @@ export class OrderMapper {
       id: order.getOrderId().getValue(),
       customerId: order.getCustomerId().getValue(),
       items: order.getItems().map((item) => ({
-        id: item.getId(),
+        id: item.getOrderItemId().getValue(),
         productId: item.getProductId().getValue(),
         price: item.getPrice().getAmount(),
         quantity: item.getQuantity().getValue(),
